@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: TaskFlow
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/TaskFlow
+    username: junior
+    password: TaskFlow
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate::
+          dialect: org.hibernate.dialect.MySQL8Dialect
+  
+  mail:
+    host: localhost
+    port: 9025
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+server:
+  servlet:
+    context-path: /api

@@ -1,0 +1,47 @@
+services:
+  db:
+    container_name: mysql-8.0
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: skydev
+      MYSQL_DATABASE: TaskFlow
+      MYSQL_USER: junior
+      MYSQL_PASSWORD: TaskFlow
+    ports:
+      - 3307:3306   
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_ARBITRARY=1
+
+  smtp4dev:
+    container_name: smtp4dev
+    image: rnwood/smtp4dev:v3
+    restart: always
+    ports:
+      # Change the number before : to the port the web interface should be accessible on
+      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
+      - '8082:80'
+      # Change the number before : to the port the SMTP server should be accessible on
+      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
+      - '9025:25'
+      # Change the number before : to the port the IMAP server should be accessible on
+      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
+      - '143:143'
+    volumes:
+      # This is where smtp4dev stores the database..
+        - smtp4dev-data:/smtp4dev
+
+volumes:
+  db_data:
+  smtp4dev-data:
