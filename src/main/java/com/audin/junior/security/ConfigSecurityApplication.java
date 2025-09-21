@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,14 +34,11 @@ public class ConfigSecurityApplication {
         return
             httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                     authorize -> authorize
-                        .requestMatchers(HttpMethod.POST ,"/register").permitAll()
-                        .requestMatchers(HttpMethod.POST ,"/login").permitAll()
-                        .requestMatchers(HttpMethod.POST ,"/verify-otp").permitAll()
-                        .requestMatchers(HttpMethod.POST ,"/refresh-token").permitAll()
-                        .requestMatchers(HttpMethod.POST ,"/reset-password").permitAll()
-                        .requestMatchers(HttpMethod.POST ,"/request-reset-password").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS ,"/**").permitAll()
+                        .requestMatchers(HttpMethod.POST ,"/auth/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

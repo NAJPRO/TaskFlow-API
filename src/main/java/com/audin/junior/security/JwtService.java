@@ -41,7 +41,7 @@ public class JwtService {
     private final UserService userService;
     private final String SECRET = "a13c4b5bb2bfcf4ea8134baec33b2fd7008cfb5765836469a3e3c6ff1cfa52ab";
     public static final long JWT_EXPIRATION = 30* 60 * 1000; // 15 minutes
-    private static final String BEARER = "Bearer ";
+    private static final String BEARER = "Bearer";
     private final JwtRepository jwtRepository;
 
     public Map<String, String> generateToken(String username) {

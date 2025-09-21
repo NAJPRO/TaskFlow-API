@@ -11,5 +11,4 @@ public class RegisterDTORequest {
     private String pseudo;
     private String email;
     private String password;
-    private String confirmPassword;
 }

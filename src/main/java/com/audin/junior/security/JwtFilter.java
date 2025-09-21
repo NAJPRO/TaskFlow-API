@@ -28,6 +28,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Allow preflight requests
+        if("OPTIONS".equalsIgnoreCase(request.getMethod())){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = null;
         String username = null;
         UserDetails userDetails = null;
@@ -36,15 +43,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
 
         // Ignore public routes
-        if (path.equals("/register") ||
-                path.equals("/login") ||
-                path.equals("/verify-otp") ||
-                path.equals("/reset-password") ||
-                path.equals("/refresh-token") || 
-                path.equals("/request-reset-password")) {
+        if(path.startsWith("/auth/")){
             filterChain.doFilter(request, response);
             return;
         }
+        
 
         final String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Bearer ")) {
