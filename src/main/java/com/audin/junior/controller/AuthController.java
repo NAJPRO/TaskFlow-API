@@ -59,14 +59,15 @@ public class AuthController {
     }
 
     @PostMapping(path = "login")
-    public Map<String, String> login(@RequestBody LoginDTORequest request, HttpServletResponse response) {
+    public @ResponseBody UserDTOResponse login(@RequestBody LoginDTORequest request, HttpServletResponse response) {
+        System.out.println("ENTRER");
         final Authentication authenticate = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
         if(authenticate.isAuthenticated() == false){
             throw new IllegalArgumentException("Invalid credentials");
         }
-
+        //return ResponseEntity.ok(Map.of("Valide", "OK")).getBody();
         Map<String, String> tokens = this.jwtService.generateToken(request.username());
         String accessToken = tokens.get("Bearer");
         String refreshToken = tokens.get("refresh");
@@ -74,8 +75,11 @@ public class AuthController {
         ResponseCookie cookie = this.createHttpOnlyCookie("refreshToken", refreshToken, 60 * 60 * 1000);
         
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        User user = this.service.findByEmail(request.username());
+        
+        UserDTOResponse dtoResponse = this.authMapper.toDto(user, accessToken);
 
-        return ResponseEntity.ok(Map.of("accessToken", accessToken)).getBody();
+        return ResponseEntity.ok(dtoResponse).getBody();
     }
 
     @PostMapping(path = "logout")

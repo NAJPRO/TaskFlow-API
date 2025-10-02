@@ -38,6 +38,7 @@ public class TaskMapperImpl implements TaskMapper {
                 entity.getPriority(),
                 entity.getEndAt(),
                 category,
+                entity.getCreatedAt(),
                 tags);
         return task;
     }

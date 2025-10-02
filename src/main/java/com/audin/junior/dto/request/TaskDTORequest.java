@@ -10,5 +10,7 @@ public record TaskDTORequest(
     TaskPriority priority,
     Integer category_id,
     String endAt,
-    List<Integer> tag_ids
+    List<String> tags
+
+    // List<Integer> tag_ids
 ) {}

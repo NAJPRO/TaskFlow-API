@@ -39,16 +39,15 @@ public class TagServiceImpl implements TagService{
     }
 
     @Override
-    public TagDTOResponse save(TagDTORequest dto){
+    public Tag save(TagDTORequest dto){
         User user = authUtils.getCurrentUser();
      
         Tag tag = this.tagMapper.toEntity(dto);
-        this.tagRepository.findByNameForUser(user, tag.getName()).ifPresent(t -> {
-            throw new IllegalArgumentException("Le tag avec le nom " + tag.getName() + " existe déjà pour cet utilisateur.");
+        return this.tagRepository.findByNameForUser(user, tag.getName()).orElseGet(() -> {
+            tag.setUser(user);
+            this.tagRepository.save(tag);
+            return tag;
         });
-        tag.setUser(user);
-        this.tagRepository.save(tag);
-        return tagMapper.toDto(tag);
     }
 
     @Override

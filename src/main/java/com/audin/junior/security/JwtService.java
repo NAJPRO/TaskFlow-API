@@ -139,6 +139,7 @@ public class JwtService {
                 "pseudo", user.getPseudo(),
                 "email", user.getEmail(),
                 "role", user.getRole().getName().toString());
+                
         final String bearer = Jwts.builder()
                 .issuedAt(new Date(currentTime))
                 .expiration(new Date(expirationTime))

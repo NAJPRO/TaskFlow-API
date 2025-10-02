@@ -9,7 +9,7 @@ import com.audin.junior.entity.Tag;
 public interface TagService {
     public List<TagDTOResponse> getAllTags();
 
-    public TagDTOResponse save(TagDTORequest dto);
+    public Tag save(TagDTORequest dto);
 
     public void delete(Integer id);
 

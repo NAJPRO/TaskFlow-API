@@ -16,6 +16,7 @@ import com.audin.junior.enums.UserStatus;
 import com.audin.junior.mapper.AuthMapper;
 import com.audin.junior.repository.UserRepository;
 import com.audin.junior.service.OtpValidationService;
+import com.audin.junior.utils.AuthUtils;
 
 import lombok.AllArgsConstructor;
 
@@ -26,6 +27,7 @@ public class AuthService {
     private final AuthMapper authMapper;
     private final OtpValidationService otpValidationService;
     private BCryptPasswordEncoder passwordEncoder;
+    private AuthUtils authUtils;
 
     public User register(RegisterDTORequest dto) {
         if (this.userRepository.existsByEmail(dto.getEmail())) {
@@ -42,7 +44,7 @@ public class AuthService {
         Role role = new Role();
         role.setName(UserRole.USER);
         user.setRole(role);
-
+        user.setStatus(UserStatus.ACTIVE);
         user = this.userRepository.save(user);
         this.otpValidationService.save(user);
         return user;
@@ -99,5 +101,14 @@ public class AuthService {
         } else {
             throw new IllegalArgumentException("Invalid OTP");
         }
+    }
+
+    public User me(){
+        User user = this.authUtils.getCurrentUser();
+        return user;
+    }
+
+    public User findByEmail(String email){
+        return this.userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 }

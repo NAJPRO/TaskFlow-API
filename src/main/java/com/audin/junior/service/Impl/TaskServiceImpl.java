@@ -1,9 +1,11 @@
 package com.audin.junior.service.Impl;
+
 import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.audin.junior.dto.request.TagDTORequest;
 import com.audin.junior.dto.request.TaskDTORequest;
 import com.audin.junior.entity.Category;
 import com.audin.junior.entity.Tag;
@@ -21,7 +23,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class TaskServiceImpl implements TaskService{
+public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final CategoryService categoryService;
@@ -32,7 +34,9 @@ public class TaskServiceImpl implements TaskService{
     public Task createTask(TaskDTORequest taskDTO) {
         User user = authUtils.getCurrentUser();
         Category category = categoryService.findByIdAndUser(taskDTO.category_id());
-        List<Tag> tags = tagService.findAllByIdsAndUser(taskDTO.tag_ids());
+        List<Tag> tags = taskDTO.tags().stream().map(
+                tag -> this.tagService.save(new TagDTORequest(tag))).toList();
+       // tagService.findAllByIdsAndUser(taskDTO.tag_ids());
         Task task = taskMapper.toEntity(taskDTO, user, category, tags);
         task = taskRepository.save(task);
         return task;

@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
 
         // Ignore public routes
+        System.out.println(path);
         if(path.startsWith("/auth/")){
             filterChain.doFilter(request, response);
             return;
@@ -55,6 +56,8 @@ public class JwtFilter extends OncePerRequestFilter {
             isTokenExpire = jwtService.isTokenExpire(token);
             username = this.jwtService.getUserName(token);
         }
+        System.out.println("TOKEN TROUVEEE :: : " + token);
+        
         final Jwt jwtDB = this.jwtService.findByToken(token);
         if (!isTokenExpire &&
                 username != null &&
