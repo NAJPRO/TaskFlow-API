@@ -1,4 +1,4 @@
-package com.audin.junior.service.Impl;
+package com.audin.junior.service.impl;
 
 import java.util.List;
 
@@ -27,9 +27,12 @@ public class CategoryServiceImpl implements CategoryService{
         User user = authUtils.getCurrentUser(); 
 
         Category category = this.categoryMapper.toEntity(request);
-        category.setUser(user);
-        this.repository.save(category);
-        return category;
+        return this.repository.findByNameAndUser(category.getName(), user).orElseGet(
+            () -> {
+                category.setUser(user);
+                return this.repository.save(category);
+            }
+        );
     }
 
     @Override

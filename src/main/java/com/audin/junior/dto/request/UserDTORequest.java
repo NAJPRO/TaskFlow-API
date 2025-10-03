@@ -1,5 +1,8 @@
 package com.audin.junior.dto.request;
 
-public class UserDTORequest {
+public record UserDTORequest(
+    String pseudo,
+    String email
+) {
 
 }

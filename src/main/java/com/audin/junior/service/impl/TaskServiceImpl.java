@@ -1,4 +1,4 @@
-package com.audin.junior.service.Impl;
+package com.audin.junior.service.impl;
 
 import java.util.List;
 
@@ -43,6 +43,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Task toogleArchived(Task task) {
+        task.setArchived(!task.isArchived());
+        this.taskRepository.save(task);
+        return task;
+    }
+
+    @Override
     public void deleteTask(Integer id) {
         User user = authUtils.getCurrentUser();
 
@@ -79,6 +86,13 @@ public class TaskServiceImpl implements TaskService {
         User user = authUtils.getCurrentUser();
 
         Task task = taskRepository.findBySlugAndUser(slug, user).orElseThrow();
+        return task;
+    }
+
+    @Override
+    public Task toogleSatus(Task task, TaskStatus status) {
+        task.setStatus(status);
+        this.taskRepository.save(task);
         return task;
     }
 

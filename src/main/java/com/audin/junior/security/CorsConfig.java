@@ -17,7 +17,7 @@ public class CorsConfig {
 
         // 🔑 Autoriser ton frontend React
         configuration.setAllowedOrigins(List.of("http://localhost:3003")); // adapte au port de ton frontend
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true); // important si tu utilises cookies/withCredentials
 

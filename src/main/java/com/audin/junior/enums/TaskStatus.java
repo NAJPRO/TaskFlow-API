@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 public enum TaskStatus {
     TODO("À faire"),
     IN_PROGRESS("En cours"),
-    REVIEW("En revue"),
     DONE("Terminée"),
     ARCHIVED("Archivé"),
     CANCELLED("Annulée");

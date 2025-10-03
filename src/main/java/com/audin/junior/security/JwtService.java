@@ -1,5 +1,6 @@
 package com.audin.junior.security;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -14,6 +15,8 @@ import javax.crypto.SecretKey;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,13 +43,13 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtService {
     private final UserService userService;
     private final String SECRET = "a13c4b5bb2bfcf4ea8134baec33b2fd7008cfb5765836469a3e3c6ff1cfa52ab";
-    public static final long JWT_EXPIRATION = 30* 60 * 1000; // 15 minutes
+    public static final long JWT_EXPIRATION = 30 * 60 * 1000; // 15 minutes
     private static final String BEARER = "Bearer";
     private final JwtRepository jwtRepository;
 
     public Map<String, String> generateToken(String username) {
         User user = this.userService.findByEmail(username);
-        final Map<String, String> token = new HashMap<>(this.generateJwt(user)); 
+        final Map<String, String> token = new HashMap<>(this.generateJwt(user));
         final String finalToken = token.get(BEARER);
 
         this.disableTokens(user);
@@ -67,6 +70,7 @@ public class JwtService {
                 .token(finalToken)
                 .build();
 
+        
         this.jwtRepository.save(jwt);
         token.put("refresh", refreshToken.getToken()); // ✅ plus d’erreur
         return token;
@@ -91,8 +95,8 @@ public class JwtService {
 
     }
 
-    public Map<String, String> refrechToken(Map<String, String> refreshTokenMap) {
-        Jwt jwt = this.jwtRepository.findByRefrechToken(refreshTokenMap.get("refresh"))
+    public Map<String, String> refrechToken(String refreshTokenMap) {
+        Jwt jwt = this.jwtRepository.findByRefrechToken(refreshTokenMap)
                 .orElseThrow(() -> new RuntimeException("Token invalide"));
 
         if (jwt.getRefreshToken().getExpireAt().isBefore(Instant.now())) {
@@ -139,7 +143,7 @@ public class JwtService {
                 "pseudo", user.getPseudo(),
                 "email", user.getEmail(),
                 "role", user.getRole().getName().toString());
-                
+
         final String bearer = Jwts.builder()
                 .issuedAt(new Date(currentTime))
                 .expiration(new Date(expirationTime))
@@ -169,13 +173,11 @@ public class JwtService {
         this.jwtRepository.saveAll(jwts);
     }
 
-
     // @Scheduled(fixedRate = 86400000) // every 24 hours
     @Scheduled(cron = "0 */1 * * * * ") // every 1 minute
     public void deleteAllExpireTokens() {
         log.info("Suppression des tokens expirés et désactivés ...");
         this.jwtRepository.deleteByExpireAndDesactivate(true, true);
     }
-
 
 }

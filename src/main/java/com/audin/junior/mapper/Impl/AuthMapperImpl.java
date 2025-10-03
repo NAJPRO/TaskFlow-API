@@ -27,9 +27,23 @@ public class AuthMapperImpl implements AuthMapper {
             entity.getEmail(),
             entity.getName(),
             entity.getEmailVerifiedAt(),
+            entity.getCreatedAt(),
             accessToken
         );
         return userDTO;
     }
 
+    @Override
+    public UserDTOResponse toDto(User entity) {
+        UserDTOResponse userDTO = new UserDTOResponse(
+            entity.getId(),
+            entity.getPseudo(),
+            entity.getEmail(),
+            entity.getName(),
+            entity.getEmailVerifiedAt(),
+            entity.getCreatedAt(),
+            null
+        );
+        return userDTO;
+    }
 }

@@ -34,9 +34,11 @@ public class TaskMapperImpl implements TaskMapper {
                 entity.getId(),
                 entity.getUser().getId(),
                 entity.getTitle(),
+                entity.getStatus(),
                 entity.getDescription(),
                 entity.getPriority(),
                 entity.getEndAt(),
+                entity.isArchived(),
                 category,
                 entity.getCreatedAt(),
                 tags);

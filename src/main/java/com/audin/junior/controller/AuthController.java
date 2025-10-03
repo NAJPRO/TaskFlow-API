@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final AuthMapper authMapper;
+
     @PostMapping(path = "register")
     public @ResponseBody UserDTOResponse register(@RequestBody RegisterDTORequest dto, HttpServletResponse response) {
         log.info("REGISTER PAYLOAD : " + dto.toString());
@@ -51,7 +53,7 @@ public class AuthController {
         String refreshToken = tokens.get("refresh");
 
         ResponseCookie cookie = this.createHttpOnlyCookie("refreshToken", refreshToken, 60 * 60 * 720); // 30 days
-        
+
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         UserDTOResponse dtoResponse = this.authMapper.toDto(user, accessToken);
@@ -64,19 +66,19 @@ public class AuthController {
         final Authentication authenticate = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
-        if(authenticate.isAuthenticated() == false){
+        if (authenticate.isAuthenticated() == false) {
             throw new IllegalArgumentException("Invalid credentials");
         }
-        //return ResponseEntity.ok(Map.of("Valide", "OK")).getBody();
+        // return ResponseEntity.ok(Map.of("Valide", "OK")).getBody();
         Map<String, String> tokens = this.jwtService.generateToken(request.username());
         String accessToken = tokens.get("Bearer");
         String refreshToken = tokens.get("refresh");
 
         ResponseCookie cookie = this.createHttpOnlyCookie("refreshToken", refreshToken, 60 * 60 * 1000);
-        
+
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         User user = this.service.findByEmail(request.username());
-        
+
         UserDTOResponse dtoResponse = this.authMapper.toDto(user, accessToken);
 
         return ResponseEntity.ok(dtoResponse).getBody();
@@ -88,8 +90,23 @@ public class AuthController {
     }
 
     @PostMapping(path = "refresh-token")
-    public @ResponseBody Map<String, String> refrechToken(@RequestBody Map<String, String> request) {
-        return this.jwtService.refrechToken(request);
+    public ResponseEntity<Map<String, String>> refreshToken(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken, 
+            HttpServletResponse response) {
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                    .body(Map.of("error", "Refresh token is missing"));
+        }
+
+        Map<String, String> tokens = jwtService.refrechToken(refreshToken);
+        String newRefreshToken = tokens.get("refresh");
+
+        ResponseCookie cookie = this.createHttpOnlyCookie("refreshToken", newRefreshToken, 60 * 60 * 1000);
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        tokens.remove(newRefreshToken);
+        return ResponseEntity.ok(tokens);
     }
 
     @PostMapping(path = "reset-password")
@@ -98,13 +115,12 @@ public class AuthController {
         return null;
     }
 
-
     @PostMapping(path = "request-reset-password")
     public void requestResetPassword(@RequestBody VerifyOtpRequest request) {
-        this.service.sendOtp(request.getEmail());;
+        this.service.sendOtp(request.getEmail());
+        ;
         log.info("OTP VERIFICATION FOR RESET PASSWORD : " + request.getEmail());
     }
-    
 
     @PostMapping(path = "verify-otp")
     public void verifyOtp(@RequestBody VerifyOtpRequest request) {

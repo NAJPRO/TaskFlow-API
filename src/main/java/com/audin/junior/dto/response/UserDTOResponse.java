@@ -8,5 +8,6 @@ public record UserDTOResponse(
     String email,
     String name,
     LocalDateTime emailVerifiedAt,
+    LocalDateTime createdAt,
     String accessToken
 ) {}

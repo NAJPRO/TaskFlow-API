@@ -1,4 +1,4 @@
-package com.audin.junior.service.Impl;
+package com.audin.junior.service.impl;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

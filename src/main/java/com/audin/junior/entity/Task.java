@@ -23,6 +23,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -39,7 +40,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(TaskSlugListener.class)
-@Table(name = "tasks")
+@Table(name = "tasks", indexes = {
+    @Index(columnList = "user_id, category_id, title, status, priority")
+})
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,6 +71,8 @@ public class Task {
     private TaskPriority priority;
 
     private String description;
+
+    private boolean isArchived = false;
 
     private Instant endAt;
 

@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.audin.junior.service.UserService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 @Configuration
@@ -24,11 +25,11 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ConfigSecurityApplication {
 
-    //private final AuthenticationProvider authenticationProvider;
+    // private final AuthenticationProvider authenticationProvider;
     private final ConfigEncodingPassword encodingPassword;
     private final JwtFilter jwtFilter;
 
-    //private final UserService userDetailsService;
+    // private final UserService userDetailsService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return
@@ -42,6 +43,10 @@ public class ConfigSecurityApplication {
 
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                    }))
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                     session -> session
@@ -53,18 +58,16 @@ public class ConfigSecurityApplication {
                 .build();
     }
 
- 
-
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserService userDetailsService){
+    public AuthenticationProvider authenticationProvider(UserService userDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(this.encodingPassword.passwordEncoder());
         return authProvider;
     }
 }
-

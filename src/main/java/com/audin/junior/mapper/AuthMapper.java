@@ -7,4 +7,6 @@ import com.audin.junior.entity.User;
 public interface AuthMapper {
     public User toEntity(RegisterDTORequest dto);
     public UserDTOResponse toDto(User entity, String accessToken);
+    public UserDTOResponse toDto(User entity);
+
 }

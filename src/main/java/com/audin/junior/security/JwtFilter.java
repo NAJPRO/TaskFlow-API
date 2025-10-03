@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // Allow preflight requests
-        if("OPTIONS".equalsIgnoreCase(request.getMethod())){
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -44,20 +44,24 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Ignore public routes
         System.out.println(path);
-        if(path.startsWith("/auth/")){
+        if (path.startsWith("/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
-        
 
         final String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Bearer ")) {
             token = authorization.substring(7);
             isTokenExpire = jwtService.isTokenExpire(token);
             username = this.jwtService.getUserName(token);
+
+            if (isTokenExpire) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                return;
+            }
         }
         System.out.println("TOKEN TROUVEEE :: : " + token);
-        
+
         final Jwt jwtDB = this.jwtService.findByToken(token);
         if (!isTokenExpire &&
                 username != null &&

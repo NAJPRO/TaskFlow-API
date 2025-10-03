@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -31,6 +32,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "tags", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "user_id", "name" })
+}, indexes = {
+    @Index(columnList = "name")
 })
 public class Tag {
     @Id

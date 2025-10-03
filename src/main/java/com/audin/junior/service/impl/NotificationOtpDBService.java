@@ -1,4 +1,4 @@
-package com.audin.junior.service.Impl;
+package com.audin.junior.service.impl;
 
 import org.springframework.stereotype.Service;
 

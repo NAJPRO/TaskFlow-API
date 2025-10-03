@@ -11,6 +11,10 @@ public interface TaskService {
     Task findById(Integer id);
     Task findBySlug(String slug);
     Task updateTask(Integer id, TaskDTORequest taskDTO);
+
+    Task toogleSatus(Task task, TaskStatus status);
+
+    Task toogleArchived(Task task);
     void deleteTask(Integer id);
 
     List<Task> findAllByUser();
